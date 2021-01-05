@@ -1,0 +1,6 @@
+eTriops Tech Docs
+
+STATE:
+The game state is encoded using a nested dictionary format which holds the game's core variables. The main dictionary holds two nested dictionaries; the first describes the state of the triops, and the second describes the state of the tank.
+
+state = { 'triops': {'name': 

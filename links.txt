@@ -1,0 +1,5 @@
+USEFUL LINKS:
+
+https://pypi.org/project/pynput/  <--- Documentation on pynput module
+
+https://www.reddit.com/r/learnpython/comments/8y0p3j/how_do_i_stop_for_loop_with_keyboard_listener/  <--- Example of how to use pynput for keyboard handling
