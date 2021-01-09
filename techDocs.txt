@@ -1,6 +1,17 @@
 eTriops Tech Docs
 
-STATE:
-The game state is encoded using a nested dictionary format which holds the game's core variables. The main dictionary holds two nested dictionaries; the first describes the state of the triops, and the second describes the state of the tank.
+GAME STATE:
+The game state is encoded using a dictionary format to hold the game's core variables:
 
-state = { 'triops': {'name': 
+gamestate = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0}
+    
+name       - Holds the name of the current triops
+age        - Age of the triops in days
+tod        - "Time Of Day"; number of ticks since the current day started
+hcap       - "Health Cap"; the maximum health the triops can attain under current conditions
+health     - the current health of the triops
+hunger     - how "full" the triops is, food-wise. A lower value indicates the triops is hungry
+ammonia    - how much ammonia is currently in the tank
+foodInTank - how much food is in the tank
+
+Game state is written to the file "etriops.sav" periodically, as well as on quitting the program. The program will attempt to load the game state from this file upon starting. 
