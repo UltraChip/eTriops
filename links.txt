@@ -6,4 +6,4 @@ https://www.reddit.com/r/learnpython/comments/8y0p3j/how_do_i_stop_for_loop_with
 
 https://www.geeksforgeeks.org/python-dictionary/  <--- Good description of using dictionaries in Python
 
-https://www.youtube.com/watch?v=7A_csP9drJw  <--- Tutorial on how to input text with tkinter
+http://bit.ly/2UFLKgj  <--- Good tkinter tutorials
