@@ -1,5 +1,5 @@
 ## UltraChip's e-Triops Virtual Pet
-## v. 0.1
+## v. 0.5
 ##
 ## e-Triops is a virtual pet in the style of a 
 ## classic Tamagotchi toy, meant to simulate the
@@ -20,7 +20,6 @@ descAge = "SnS"
 descHealth = "SnS"
 descHunger = "SnS"
 descAmm = "SnS"
-simKill = False
 
 # Interaction Handler: Parses key presses from the user
 def interact(key):
@@ -38,7 +37,6 @@ def interact(key):
         print ("descHealth is: " + descHealth)
         print ("descHunger is: " + descHunger)
         print ("descAmm is:    " + descAmm)
-        print ("simKill is:    " + str(simKill))
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -57,19 +55,7 @@ def savegame():
 def resetprompt():
     prompt = tk.messagebox.askquestion("Confirm Reset", "Are you sure you want to ERASE " + gs["name"] + " and completely start over?")
     if prompt == 'yes':
-        resetgame()
-
-def resetgame():
-    #global simKill
-    #if bgSimThread.isalive():
-    #    wasalive = True
-    #    simKill = True
-    #    bgSimThread.join()
-    initgame()
-    #if wasalive:
-    #    wasalive = False
-    #    simKill = False
-    #    bgSimThread.start()   
+        initgame()
 
 def initgame():
     global gs
@@ -109,7 +95,7 @@ def tick():
         molt()                         # once every three days or so.
     
     if random.randint(1,259200) == 6 and gs["age"] >= 14:  # Once a triop reaches day 14 or older it has a random chance of
-        eggs()                                           # laying eggs (average once every three days).
+        eggs()                                             # laying eggs (average once every three days).
 
     if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
         savegame()
@@ -126,6 +112,7 @@ def molt():
     if av > 93:
         av = 93
     gs["health"] = gs["health"] - (random.randint(1,10) + av)
+    print("Molted!")
 
 def eggs():
     global gs
@@ -134,6 +121,7 @@ def eggs():
         if gs["health"] <= 40:
             numeggs = numeggs / 2
         gs["eggs"] += numeggs
+        print ("Laid " + str(numeggs) + " eggs!")
 
 def death():
     def reset():
@@ -232,11 +220,8 @@ def buildDescriptions():
 
 def bgSimLoop():
    while True:
-       global simKill
        tick()
        time.sleep(1)
-       if simKill:
-           break
 
 def refreshScreen():
     buildDescriptions()
@@ -253,11 +238,6 @@ def closeprompt():
         closegame()
 
 def closegame():
-    #global simKill
-    #bgSimThread.stop()
-    #if bgSimThread.isalive():
-    #    simKill = True
-    #    bgSimThread.join()
     savegame()
     sys.exit()
 
