@@ -4,8 +4,5 @@ Virtual Pet project centered around Triops.
 
 Dependencies:
 
-- Python 3.7 or later
-!!- pynput module
-!!- clear-screen module
+- Python 3
 - TKinter
-- PIL (python3-pil.imagetk)
