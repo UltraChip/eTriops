@@ -119,7 +119,7 @@ def molt():
     if av > 93:
         av = 93
     gs["health"] = gs["health"] - (random.randint(1,10) + av)
-    print("Molted!")
+    print("Molted! Health knocked down to " + str(gs["health"]))
 
 def eggs():
     global gs
@@ -160,6 +160,8 @@ def death():
 def feed():
     global gs
     n = sd.askinteger("Feed Triops", "How many pellets do you want to give " + gs["name"] + "?")
+    if n is None:
+        n = 0
     gs["foodInTank"] += n
 
 def clean():
@@ -249,6 +251,13 @@ def closeprompt():
         closegame()
 
 def closegame():
+    global bgSimStop
+    global simLock
+    simLock = True
+    bgSimStop = True
+    print("Sent kill signals to background sim...")
+    bgSimThread.join()
+    print("Background sim has stopped.")
     savegame()
     sys.exit()
 
@@ -282,7 +291,7 @@ hungerLabel.grid(row=3, column=2)
 hungerDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
 hungerDesc.grid(row=3, column=3)
 
-ammLabel = tk.Label(gui, text="Ammonia:", width=lWidth, anchor="w")
+ammLabel = tk.Label(gui, text="Water Quality:", width=lWidth, anchor="w")
 ammLabel.grid(row=4, column=0)
 ammDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
 ammDesc.grid(row=4, column=1)
