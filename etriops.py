@@ -126,12 +126,12 @@ def eggs():
 def death():
     def reset():
         dbox.destroy()
-        resetgame()
+        initgame()
 
     def close():
         dbox.destroy()
         closegame()
-    
+
     dbox = tk.Toplevel(gui)
     dbox.title("RIP")
 
@@ -141,12 +141,14 @@ def death():
     blankspace.grid(row=1, column=0)
     finalAge = tk.Label(dbox, text="Final Age: " + str(gs["age"]) + " days - " + descAge, width=25, anchor='w')
     finalAge.grid(row=2, column=0, columnspan=2)
-    finalEggs = tk.Label(dbox, text="Total Egg Count: " + gs["eggs"] + " eggs", width=25, anchor='w')
+    finalEggs = tk.Label(dbox, text="Total Egg Count: " + str(gs["eggs"]) + " eggs", width=25, anchor='w')
     finalEggs.grid(row=3, column=0, columnspan=2)
     dResetBtn = tk.Button(dbox, text="Reset Game", command=reset)
     dResetBtn.grid(row=4, column=0)
     dQuitBtn = tk.Button(dbox, text="Quit Game", command=close)
     dQuitBtn.grid(row=4, column=1)
+    while True:
+        time.sleep(1)
 
 def feed():
     global gs
@@ -182,7 +184,7 @@ def buildDescriptions():
         descAge = "LEGENDARY"
     
     if gs["health"] < 20:
-        descHealth = "CRIICAL"
+        descHealth = "CRITICAL"
     if gs["health"] >=20 and gs["health"] < 50:
         descHealth = "Poor"
     if gs["health"] >= 50 and gs["health"] < 80:
