@@ -20,6 +20,8 @@ descAge = "SnS"
 descHealth = "SnS"
 descHunger = "SnS"
 descAmm = "SnS"
+bgSimStop = False
+simLock = False
 
 # Interaction Handler: Parses key presses from the user
 def interact(key):
@@ -37,6 +39,8 @@ def interact(key):
         print ("descHealth is: " + descHealth)
         print ("descHunger is: " + descHunger)
         print ("descAmm is:    " + descAmm)
+        print ("bgSimStop is:  " + str(bgSimStop))
+        print ("simLock is:    " + str(simLock))
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -59,11 +63,14 @@ def resetprompt():
 
 def initgame():
     global gs
+    global simLock
+    simLock = True
     name = sd.askstring("Enter Name", "What is your triops' name?")
     gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
     gs["name"] = name
     nameDesc.config(text=gs["name"])
     savegame()
+    simLock = False
 
 # Update the game's state after a clock tick
 def tick():
@@ -147,8 +154,8 @@ def death():
     dResetBtn.grid(row=4, column=0)
     dQuitBtn = tk.Button(dbox, text="Quit Game", command=close)
     dQuitBtn.grid(row=4, column=1)
-    while True:
-        time.sleep(1)
+    global simLock
+    simLock = True
 
 def feed():
     global gs
@@ -221,9 +228,11 @@ def buildDescriptions():
         descAmm = "SEVERE TOXICITY"
 
 def bgSimLoop():
-   while True:
-       tick()
-       time.sleep(1)
+    while not bgSimStop:    # Keep looping until bgSimStop flag is True
+        while not simLock:  # If simLock is True then break this loop and idle
+            tick()          # until it becomes False again.
+            time.sleep(1)
+        time.sleep(0.1)
 
 def refreshScreen():
     buildDescriptions()
