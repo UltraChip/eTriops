@@ -50,7 +50,7 @@ imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
 
 nameDesc = tk.Label(gui, text = "UNNAMED", width=lWidth, anchor="n", font=("Helvetica", 14, "bold"))
 nameDesc.grid(row=1, column=0, columnspan=4)
-ageDesc = tk.Label(gui, text="Adult", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
+ageDesc = tk.Label(gui, text="Middle Aged", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
 ageDesc.grid(row=2, column=0, columnspan=4)
 
 healthLabel = tk.Label(gui, text="Health:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
@@ -72,7 +72,7 @@ foodDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
 foodDesc.grid(row=4, column=3)
 
 feedBtn = tk.Button(gui, text="Feed", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=deathbox)
-feedBtn.grid(row=5, column=0, padx=5, pady=10)
+feedBtn.grid(row=5, column=0, padx=5, pady=5)
 cleanBtn = tk.Button(gui, text="Clean", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"))
 cleanBtn.grid(row=5, column=1, padx=5, pady=5)
 resetBtn = tk.Button(gui, text="Reset", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"))
