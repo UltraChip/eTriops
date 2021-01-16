@@ -88,7 +88,7 @@ def tick():
         gs["tod"] = 0
 
     # Hunger and eating
-    if gs["hunger"] < 99 and gs["foodInTank"] > 0:
+    if gs["hunger"] < 95 and gs["foodInTank"] > 0:
         gs["foodInTank"] += -1
         gs["hunger"] += 20
         if gs["hunger"] > 100:
@@ -96,7 +96,7 @@ def tick():
     if gs["hunger"] <= 0:         # If starving, decrease health by 0.00462 (+ 0.08333 to counteract natural regen) per tick.
         gs["health"] += -0.08795  # Assuming the triops is otherwise healthy it will die in ~6 hours.
 
-    gs["ammonia"] += gs["foodInTank"] * 0.00008  # Add an extra dose of ammonia for every uneaten food pellet in the tank
+    gs["ammonia"] += gs["foodInTank"] * 0.00004  # Add an extra half-dose of ammonia for every uneaten food pellet in the tank
 
     if random.randint(1,259200) == 3:  # 1 in 259,200 chance of molting per tick should result in an average molt rate of
         molt()                         # once every three days or so.
