@@ -237,11 +237,29 @@ def bgSimLoop():
         time.sleep(0.1)
 
 def refreshScreen():
+    yellow = "#e39000"
+    red = "#ff0000"
+    black = "#000000"
+    green = "#28bf0d"
+
     buildDescriptions()
     ageDesc.config(text=descAge)
     healthDesc.config(text=descHealth)
+    if descHealth == "Moderate":
+        healthDesc.config(fg=yellow)
+    elif descHealth == "Poor" or descHealth == "CRITICAL":
+        healthDesc.config(fg=red)
+    else:
+        healthDesc.config(fg=green)
     hungerDesc.config(text=descHunger)
+    if descHunger == "Hungry":
+        hungerDesc.config(fg=yellow)
+    elif descHunger == "Famished" or descHunger == "STARVING":
+        hungerDesc.config(fg=red)
+    else:
+        hungerDesc.config(fg=green)
     ammDesc.config(text=descAmm)
+    if descAmm == ""
     foodDesc.config(text=gs["foodInTank"])
     gui.after(1, refreshScreen)
 
