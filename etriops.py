@@ -104,14 +104,14 @@ def tick():
     if random.randint(1,259200) == 6 and gs["age"] >= 14:  # Once a triop reaches day 14 or older it has a random chance of
         eggs()                                             # laying eggs (average once every three days).
 
-    if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
-        savegame()
-
     # Dying and enforcing the health cap
     if gs["health"] > gs["hcap"]:
         gs["health"] = gs["hcap"]
     if gs["health"] <= 0:
         death()
+
+    if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
+        savegame()
     
 def molt():
     global gs
@@ -250,16 +250,21 @@ def refreshScreen():
     elif descHealth == "Poor" or descHealth == "CRITICAL":
         healthDesc.config(fg=red)
     else:
-        healthDesc.config(fg=green)
+        healthDesc.config(fg=black)
     hungerDesc.config(text=descHunger)
     if descHunger == "Hungry":
         hungerDesc.config(fg=yellow)
     elif descHunger == "Famished" or descHunger == "STARVING":
         hungerDesc.config(fg=red)
     else:
-        hungerDesc.config(fg=green)
+        hungerDesc.config(fg=black)
     ammDesc.config(text=descAmm)
-    if descAmm == ""
+    if descAmm == "Dirty":
+        ammDesc.config(fg=yellow)
+    elif descAmm == "Toxic" or descAmm == "SEVERE TOXICITY":
+        ammDesc.config(fg=red)
+    else:
+        ammDesc.config(fg=black)
     foodDesc.config(text=gs["foodInTank"])
     gui.after(1, refreshScreen)
 
