@@ -95,6 +95,8 @@ def tick():
             gs["hunger"] = 100
     if gs["hunger"] <= 0:         # If starving, decrease health by 0.00462 (+ 0.08333 to counteract natural regen) per tick.
         gs["health"] += -0.08795  # Assuming the triops is otherwise healthy it will die in ~6 hours.
+    if gs["age"] < 3:       # If the triops is under 3 days old it can't get hungry.
+        gs["hunger"] = 100
 
     gs["ammonia"] += gs["foodInTank"] * 0.00004  # Add an extra half-dose of ammonia for every uneaten food pellet in the tank
 
