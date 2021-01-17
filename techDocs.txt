@@ -17,7 +17,6 @@ eggs       - total number of eggs that the triops has laid
 
 Game state is written to the file "etriops.sav" periodically, as well as on quitting the program. The program will attempt to load the game state from this file upon starting. 
 
-
 TICKS AND INCREMENT/DECREMENT RATES:
 The game ticks once per second. On each tick, the program will recompute the game state and update its values accordingly. After 86,400 ticks (the number of seconds in a 24-hour day) the triops' age will increase by 1 and the Time-Of-Day counter will reset to 0. Values are calibrated to increase/decrease at a rate that roughly emulates a real life triops:
 
@@ -30,6 +29,7 @@ Special Cases:
 - If health is already at the health cap then it won't increase.
 - If hunger reaches 0 then health won't regen, and will in fact take a 0.00462 hit per tick. At this rate a starving triops (that is otherwise healthy) will die in approx. 6 hours.
 - Any uneaten food pellets left in the aquarium will add an additional 0.00008 ammonia per pellet per tick. This is to emulate how overfeeding can lead to water toxicity.
+- If a triops' age is under 3 days then it can't get hungry (and, subsequently, can't eat). Incidentally, this means that any food placed in to the tank will sit there and contribute to raising the ammonia levels. This is to emulate how real-world triops subsist on microbes when they are hatchlings. 
 
 Note that it is possible for ammonia to go over 100! Given how the health cap is calculated it's theoretically possible for ammonia to reach as high as 200 before the tank becomes mathmatically uninhabitable. In practice, however, a tank with extremely high ammonia levels will put a triops at risk, as its health will be severely capped and it won't be able to cope with other health hazards (such as molting) as easily. 
 
@@ -44,6 +44,18 @@ random int 1..10 + age
 
 However, for the purposes of computing molt damage the age variable is capped at 93. This is to ensure that a triops always has at least a very small chance of survival and there are no artificial limits on its lifespan. With age at 93, if the random int is anything under 5 an otherwise-healthy triops will just barely survive, whereas if the random int is above a 5 they likely won't. 
 
-
 EGGS:
-When a triops goes to lay it has a random chance of producing anywhere from 10 to 30 eggs, which will be added to the triop's total egg count. The lifetime count will be reported after the triops' death and serve as a sort of final score. If the triops' health is between 20 and 40 then the number of eggs it would have laid gets cut in half. If the triops' health is less than 20 then it can't lay eggs at all. This is to emulate how poor health can impact vitality in a real-world animal. 
+When a triops goes to lay it has a random chance of producing anywhere from 10 to 30 eggs, which will be added to the triop's total egg count. The lifetime count will be reported after the triops' death and serve as a sort of final score. If the triops' health is between 20 and 40 then the number of eggs it would have laid gets cut in half. If the triops' health is less than 20 then it can't lay eggs at all. This is to emulate how poor health can impact vitality in a real-world animal.
+
+STATUS DESCRIPTORS:
+The exact numerical state of the game does not get communicated to the players on screen. Instead, textual descriptions are used according to the following table:
+
+    Age:
+          <3 days  -  Hatchling
+        3-10 days  -  Juvenile 
+       10-14 days  -  Young Adult
+       14-30 days  -  Adult
+       30-60 days  -  Middle Aged
+       60-80 days  -  Senior
+       80-90 days  -  Elder
+       
