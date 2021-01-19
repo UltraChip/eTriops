@@ -158,6 +158,7 @@ def death():
     dQuitBtn.grid(row=4, column=1)
     global simLock
     simLock = True
+    savegame()
 
 def feed():
     global gs
@@ -268,7 +269,7 @@ def refreshScreen():
     else:
         ammDesc.config(fg=black)
     foodDesc.config(text=gs["foodInTank"])
-    gui.after(1, refreshScreen)
+    gui.after(100, refreshScreen)
 
 def closeprompt():
     prompt = tk.messagebox.askquestion("Confirm Quit", "Are you sure you want to close the game?")

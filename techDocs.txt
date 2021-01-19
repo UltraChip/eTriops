@@ -28,7 +28,7 @@ Health Cap - Half the value of the ammonia subtracted from 100. For example, if 
 Special Cases:
 - If health is already at the health cap then it won't increase.
 - If hunger reaches 0 then health won't regen, and will in fact take a 0.00462 hit per tick. At this rate a starving triops (that is otherwise healthy) will die in approx. 6 hours.
-- Any uneaten food pellets left in the aquarium will add an additional 0.00008 ammonia per pellet per tick. This is to emulate how overfeeding can lead to water toxicity.
+- Any uneaten food pellets left in the aquarium will add an additional 0.00004 ammonia per pellet per tick. This is to emulate how overfeeding can lead to water toxicity.
 - If a triops' age is under 3 days then it can't get hungry (and, subsequently, can't eat). Incidentally, this means that any food placed in to the tank will sit there and contribute to raising the ammonia levels. This is to emulate how real-world triops subsist on microbes when they are hatchlings. 
 
 Note that it is possible for ammonia to go over 100! Given how the health cap is calculated it's theoretically possible for ammonia to reach as high as 200 before the tank becomes mathmatically uninhabitable. In practice, however, a tank with extremely high ammonia levels will put a triops at risk, as its health will be severely capped and it won't be able to cope with other health hazards (such as molting) as easily. 
@@ -58,4 +58,27 @@ The exact numerical state of the game does not get communicated to the players o
        30-60 days  -  Middle Aged
        60-80 days  -  Senior
        80-90 days  -  Elder
-       
+         90> days  -  LEGENDARY
+    
+    Health:
+           <20 HP  -  CRITICAL
+         20-50 HP  -  Poor
+         50-80 HP  -  Moderate
+         80-90 HP  -  Good
+         90-95 HP  -  Excellent
+           95> HP  -  Peak Condition
+    
+    Hunger:
+               <0  -  STARVING
+             0-25  -  Famished
+            25-50  -  Hungry
+            50-75  -  Peckish
+            75-95  -  Full
+              95>  -  Stuffed
+    
+    Ammonia (Labeled on-screen as "Water Quality"):
+               <7  -  Excellent
+             7-50  -  Fair
+           50-100  -  Dirty
+          100-158  -  Toxic
+             158>  -  SEVERE TOXICITY
