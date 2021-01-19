@@ -1,9 +1,9 @@
 ## UltraChip's e-Triops Virtual Pet
-## v. 0.5
 ##
 ## e-Triops is a virtual pet in the style of a 
 ## classic Tamagotchi toy, meant to simulate the
 ## raising of a Triops.
+version = "v.0.9a"
 
 import tkinter as tk
 from tkinter import simpledialog as sd
@@ -294,14 +294,14 @@ def closegame():
 lWidth = 11
 
 gui = tk.Tk()
-gui.title("eTriops  v.0.5 (ALPHA)")
+gui.title("eTriops  " + version)
 favicon = tk.PhotoImage(file='assets/favicon.gif')
 gui.iconphoto(True, favicon)
 gui.resizable(width=False, height=False)
 gui.bind("<Key>", interact)
 
 aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
-imagePanel = tk.Label(gui, image=aniFrame, borderwidth=10, relief="sunken", anchor="s")
+imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
 imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
 
 nameDesc = tk.Label(gui, text = "UNNAMED", width=lWidth, anchor="n", font=("Helvetica", 14, "bold"))
