@@ -115,6 +115,8 @@ def tick():
     if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
         savegame()
     
+    idleAnimate()
+    
 def molt():
     global gs
     av = gs["age"]
@@ -286,6 +288,24 @@ def closegame():
     print("Background sim has stopped.")
     savegame()
     sys.exit()
+
+def idleAnimate():
+    if descAge == "SnS":
+        return
+
+    global aniFrame
+    framenum=gs["tod"] % 10
+
+    if descAge == "Hatchling":
+        prefix = "hatchling-"
+    elif descAge == "Juvenile":
+        prefix = "juvenile-"
+    else:
+        prefix = "adult-"
+
+    filename = "assets/idle/" + prefix + str(framenum) + ".gif"
+    aniFrame = tk.PhotoImage(file=filename)
+    imagePanel.config(image=aniFrame)
 
 
 # MAIN
