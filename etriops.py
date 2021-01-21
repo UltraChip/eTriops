@@ -34,6 +34,7 @@ def interact(key):
         resetprompt()
     if key.char == 'q':  # Write game to file, then quit
         closeprompt()
+
     if key.char == 'P':  # Dump debugging information to console
         print (gs)
         print ("descAge is:    " + descAge)
@@ -43,6 +44,10 @@ def interact(key):
         print ("simStop is:    " + str(simStop))
         print ("simLock is:    " + str(simLock))
         print ("aniMode is:    " + aniMode)
+    if key.char == 'O':  # CHEAT - Force egg laying
+        eggs()
+    if key.char == 'I':  # CHEAT - Force molting
+        molt()
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -127,7 +132,10 @@ def molt():
 
 def eggs():
     global gs
+    global aniMode
+
     if gs["health"] > 20:
+        aniMode = "eggs"
         numeggs = random.randint(10,30)
         if gs["health"] <= 40:
             numeggs = numeggs / 2
