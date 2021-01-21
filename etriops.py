@@ -20,8 +20,9 @@ descAge = "SnS"
 descHealth = "SnS"
 descHunger = "SnS"
 descAmm = "SnS"
-bgSimStop = False
+simStop = False
 simLock = False
+aniMode = "idle"
 
 # Interaction Handler: Parses key presses from the user
 def interact(key):
@@ -39,8 +40,9 @@ def interact(key):
         print ("descHealth is: " + descHealth)
         print ("descHunger is: " + descHunger)
         print ("descAmm is:    " + descAmm)
-        print ("bgSimStop is:  " + str(bgSimStop))
+        print ("simStop is:    " + str(simStop))
         print ("simLock is:    " + str(simLock))
+        print ("aniMode is:    " + aniMode)
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -114,9 +116,7 @@ def tick():
 
     if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
         savegame()
-    
-    idleAnimate()
-    
+      
 def molt():
     global gs
     av = gs["age"]
@@ -171,9 +171,9 @@ def feed():
 
 def clean():
     global gs
+    global aniMode
 
-    specialAnimate("clean")
-
+    aniMode = "clean"
     gs["ammonia"] = gs["ammonia"]/4
     gs["foodInTank"] = 0
 
@@ -238,7 +238,7 @@ def buildDescriptions():
         descAmm = "SEVERE TOXICITY"
 
 def bgSimLoop():
-    while not bgSimStop:    # Keep looping until bgSimStop flag is True
+    while not simStop:      # Keep looping until simStop flag is True
         while not simLock:  # If simLock is True then break this loop and idle
             tick()          # until it becomes False again.
             time.sleep(1)
@@ -282,13 +282,15 @@ def closeprompt():
         closegame()
 
 def closegame():
-    global bgSimStop
+    global simStop
     global simLock
     simLock = True
-    bgSimStop = True
-    print("Sent kill signals to background sim...")
+    simStop = True
+    print("Sent kill signals to all threads...")
     bgSimThread.join()
-    print("Background sim has stopped.")
+    print("bgSimThread has stopped.")
+    aniThread.join()
+    print("aniThread has stopped.")
     savegame()
     sys.exit()
 
@@ -311,20 +313,26 @@ def idleAnimate():
     aniFrame = tk.PhotoImage(file=filename)
     imagePanel.config(image=aniFrame)
 
-def specialAnimate(action):
+def aniLoop():
     global aniFrame
     global simLock
+    global aniMode
 
-    simLock = True
-    framenum = 0
+    while not simStop:
+        if aniMode == "idle":
+            idleAnimate()
+            time.sleep(1)
+        else:
+            framenum = 0
 
-    while framenum <= 7:
-        filename = "assets/" + action + "/" + str(framenum) + ".gif"
-        aniFrame = tk.PhotoImage(file=filename)
-        imagePanel.config(image=aniFrame)
-        time.sleep(1)
-        framenum += 1
-    simLock = False
+            while framenum <= 7:
+                filename = "assets/" + aniMode + "/" + str(framenum) + ".gif"
+                aniFrame = tk.PhotoImage(file=filename)
+                imagePanel.config(image=aniFrame)
+                time.sleep(1)
+                framenum += 1
+            aniMode = "idle"
+
 
 # MAIN
 
@@ -376,10 +384,12 @@ quitBtn.grid(row=5, column=3, padx=5, pady=5)
 
 # Getting ready for core loops
 bgSimThread = threading.Thread(target=bgSimLoop, daemon=True)
+aniThread = threading.Thread(target=aniLoop, daemon=True)
 loadgame()
 
 # Initialize core loops and threads
 bgSimThread.start()
+aniThread.start()
 refreshScreen()
 gui.mainloop()
 
