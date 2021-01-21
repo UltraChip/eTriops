@@ -3,14 +3,14 @@
 ## e-Triops is a virtual pet in the style of a 
 ## classic Tamagotchi toy, meant to simulate the
 ## raising of a Triops.
-version = "v.0.9a"
+version = "v.0.9b"
 
 import tkinter as tk
 from tkinter import simpledialog as sd
 import time
 import random
 import json
-from os import path
+import os
 import sys
 import threading
 
@@ -37,13 +37,14 @@ def interact(key):
 
     if key.char == 'P':  # Dump debugging information to console
         print (gs)
-        print ("descAge is:    " + descAge)
-        print ("descHealth is: " + descHealth)
-        print ("descHunger is: " + descHunger)
-        print ("descAmm is:    " + descAmm)
-        print ("simStop is:    " + str(simStop))
-        print ("simLock is:    " + str(simLock))
-        print ("aniMode is:    " + aniMode)
+        print ("Game version is: " + version)
+        print ("descAge is:      " + descAge)
+        print ("descHealth is:   " + descHealth)
+        print ("descHunger is:   " + descHunger)
+        print ("descAmm is:      " + descAmm)
+        print ("simStop is:      " + str(simStop))
+        print ("simLock is:      " + str(simLock))
+        print ("aniMode is:      " + aniMode)
     if key.char == 'O':  # CHEAT - Force egg laying
         eggs()
     if key.char == 'I':  # CHEAT - Force molting
@@ -52,15 +53,16 @@ def interact(key):
 # Reading, writing, and initializing the game state
 def loadgame():
     global gs
-    if path.exists('etriops.sav'):
-        with open('etriops.sav', 'r') as f:
+    sfn = savefilename()
+    if os.path.exists(sfn):
+        with open(sfn, 'r') as f:
             gs = json.loads(f.read())
         nameDesc.config(text=gs["name"])
     else:
         initgame()
 
 def savegame():
-    with open('etriops.sav', 'w+') as f:
+    with open(savefilename(), 'w+') as f:
         f.write(json.dumps(gs))
 
 def resetprompt():
@@ -78,6 +80,11 @@ def initgame():
     nameDesc.config(text=gs["name"])
     savegame()
     simLock = False
+
+def savefilename():
+    homedir = os.path.expanduser("~")
+    sfn = homedir + "/etriops.sav"
+    return sfn
 
 # Update the game's state after a clock tick
 def tick():
@@ -350,6 +357,8 @@ def aniLoop():
 
 
 # MAIN
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    os.chdir(sys._MEIPASS)
 
 # Initialize GUI Window
 lWidth = 11
@@ -360,6 +369,7 @@ favicon = tk.PhotoImage(file='assets/favicon.gif')
 gui.iconphoto(True, favicon)
 gui.resizable(width=False, height=False)
 gui.bind("<Key>", interact)
+gui.protocol("WM_DELETE_WINDOW", closegame)
 
 aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
 imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
@@ -407,6 +417,3 @@ bgSimThread.start()
 aniThread.start()
 refreshScreen()
 gui.mainloop()
-
-# If user closes the window by clicking the X, initiate the closegame() function before terminating program.
-closegame()
