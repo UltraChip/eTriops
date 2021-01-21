@@ -164,9 +164,13 @@ def death():
 
 def feed():
     global gs
+    global aniMode
+
     n = sd.askinteger("Feed Triops", "How many pellets do you want to give " + gs["name"] + "?")
     if n is None:
         n = 0
+    
+    aniMode = "feed"
     gs["foodInTank"] += n
 
 def clean():
