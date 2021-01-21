@@ -171,6 +171,9 @@ def feed():
 
 def clean():
     global gs
+
+    specialAnimate("clean")
+
     gs["ammonia"] = gs["ammonia"]/4
     gs["foodInTank"] = 0
 
@@ -290,11 +293,12 @@ def closegame():
     sys.exit()
 
 def idleAnimate():
+    global aniFrame
+
     if descAge == "SnS":
         return
 
-    global aniFrame
-    framenum=gs["tod"] % 10
+    framenum = gs["tod"] % 10
 
     if descAge == "Hatchling":
         prefix = "hatchling-"
@@ -307,6 +311,20 @@ def idleAnimate():
     aniFrame = tk.PhotoImage(file=filename)
     imagePanel.config(image=aniFrame)
 
+def specialAnimate(action):
+    global aniFrame
+    global simLock
+
+    simLock = True
+    framenum = 0
+
+    while framenum <= 7:
+        filename = "assets/" + action + "/" + str(framenum) + ".gif"
+        aniFrame = tk.PhotoImage(file=filename)
+        imagePanel.config(image=aniFrame)
+        time.sleep(1)
+        framenum += 1
+    simLock = False
 
 # MAIN
 
