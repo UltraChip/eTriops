@@ -124,6 +124,9 @@ def tick():
       
 def molt():
     global gs
+    global aniMode
+
+    aniMode = "molt"
     av = gs["age"]
     if av > 93:
         av = 93
