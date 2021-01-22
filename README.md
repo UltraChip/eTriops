@@ -1,5 +1,5 @@
-#eTriops   
-##Virtual Pet project centered around raising a Triops.
+# eTriops   
+## Virtual Pet project centered around raising a Triops.
 
 
 **HOW TO RUN:**
