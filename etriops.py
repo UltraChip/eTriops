@@ -73,6 +73,7 @@ def resetprompt():
 def initgame():
     global gs
     global simLock
+    global aniMode
     simLock = True
     name = sd.askstring("Enter Name", "What is your triops' name?")
     gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
@@ -80,6 +81,7 @@ def initgame():
     nameDesc.config(text=gs["name"])
     savegame()
     simLock = False
+    aniMode = "idle"
 
 def savefilename():
     homedir = os.path.expanduser("~")
@@ -137,7 +139,8 @@ def molt():
     av = gs["age"]
     if av > 93:
         av = 93
-    gs["health"] = gs["health"] - (random.randint(1,10) + av)
+    baseDamage = round(random.uniform(1,10), 5)
+    gs["health"] = gs["health"] - (baseDamage + av)
     print("Molted! Health knocked down to " + str(gs["health"]))
 
 def eggs():
@@ -177,7 +180,9 @@ def death():
     dQuitBtn = tk.Button(dbox, text="Quit Game", command=close)
     dQuitBtn.grid(row=4, column=1)
     global simLock
+    global aniMode
     simLock = True
+    aniMode = "death"
     savegame()
 
 def feed():
@@ -308,12 +313,13 @@ def closegame():
     global simLock
     simLock = True
     simStop = True
+    savegame()
+    print("Saved game state..")
     print("Sent kill signals to all threads...")
     bgSimThread.join()
     print("bgSimThread has stopped.")
     aniThread.join()
     print("aniThread has stopped.")
-    savegame()
     sys.exit()
 
 def idleAnimate():
@@ -348,12 +354,17 @@ def aniLoop():
             framenum = 0
 
             while framenum <= 7:
+                if aniMode == "idle" or simStop == True:  # In certain situations the program may accidentally enter this loop when
+                    break                                 # animation mode is set to idle. This conditional catches that and corrects it.
                 filename = "assets/" + aniMode + "/" + str(framenum) + ".gif"
                 aniFrame = tk.PhotoImage(file=filename)
                 imagePanel.config(image=aniFrame)
                 time.sleep(1)
                 framenum += 1
-            aniMode = "idle"
+            if aniMode == "death":
+                aniMode = "death"
+            else:
+                aniMode = "idle"
 
 
 # MAIN
@@ -375,7 +386,7 @@ aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
 imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
 imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
 
-nameDesc = tk.Label(gui, text = "UNNAMED", width=lWidth, anchor="n", font=("Helvetica", 14, "bold"))
+nameDesc = tk.Label(gui, text = "UNNAMED", width=20, anchor="n", font=("Helvetica", 14, "bold"))
 nameDesc.grid(row=1, column=0, columnspan=4)
 ageDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
 ageDesc.grid(row=2, column=0, columnspan=4)
