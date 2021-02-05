@@ -3,7 +3,7 @@
 ## e-Triops is a virtual pet in the style of a 
 ## classic Tamagotchi toy, meant to simulate the
 ## raising of a Triops.
-version = "v.0.9b"
+version = "v.1.0r"
 
 import tkinter as tk
 from tkinter import simpledialog as sd
@@ -13,6 +13,7 @@ import json
 import os
 import sys
 import threading
+import logging
 
 # Global Vars
 gs = {}
@@ -35,25 +36,30 @@ def interact(key):
     if key.char == 'q':  # Write game to file, then quit
         closeprompt()
 
-    if key.char == 'P':  # Dump debugging information to console
-        print (gs)
-        print ("Game version is: " + version)
-        print ("descAge is:      " + descAge)
-        print ("descHealth is:   " + descHealth)
-        print ("descHunger is:   " + descHunger)
-        print ("descAmm is:      " + descAmm)
-        print ("simStop is:      " + str(simStop))
-        print ("simLock is:      " + str(simLock))
-        print ("aniMode is:      " + aniMode)
+    if key.char == 'P':  # Dump debugging information to console + log
+        debugDump()
     if key.char == 'O':  # CHEAT - Force egg laying
+        logging.info("Egg-laying cheat used!")
         eggs()
     if key.char == 'I':  # CHEAT - Force molting
+        logging.info("Force-molt cheat used!")
         molt()
+
+def debugDump():
+    logging.debug(gs)
+    logging.debug("Game version: " + version)
+    logging.debug("descAge:      " + descAge)
+    logging.debug("descHealth:   " + descHealth)
+    logging.debug("descHunger:   " + descHunger)
+    logging.debug("descAmm:      " + descAmm)
+    logging.debug("simStop:      " + str(simStop))
+    logging.debug("simLock:      " + str(simLock))
+    logging.debug("aniMode:      " + aniMode)
 
 # Reading, writing, and initializing the game state
 def loadgame():
     global gs
-    sfn = savefilename()
+    sfn = buildfilepath("etriops.sav")
     if os.path.exists(sfn):
         with open(sfn, 'r') as f:
             gs = json.loads(f.read())
@@ -62,7 +68,7 @@ def loadgame():
         initgame()
 
 def savegame():
-    with open(savefilename(), 'w+') as f:
+    with open(buildfilepath("etriops.sav"), 'w+') as f:
         f.write(json.dumps(gs))
 
 def resetprompt():
@@ -73,6 +79,7 @@ def resetprompt():
 def initgame():
     global gs
     global simLock
+    global aniMode
     simLock = True
     name = sd.askstring("Enter Name", "What is your triops' name?")
     gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
@@ -80,11 +87,12 @@ def initgame():
     nameDesc.config(text=gs["name"])
     savegame()
     simLock = False
+    aniMode = "idle"
+    logging.info("New hatchling " + gs["name"] + " has been born. Congratulations!")
 
-def savefilename():
+def buildfilepath(filename):
     homedir = os.path.expanduser("~")
-    sfn = homedir + "/etriops.sav"
-    return sfn
+    return homedir + "/" + filename
 
 # Update the game's state after a clock tick
 def tick():
@@ -137,8 +145,9 @@ def molt():
     av = gs["age"]
     if av > 93:
         av = 93
-    gs["health"] = gs["health"] - (random.randint(1,10) + av)
-    print("Molted! Health knocked down to " + str(gs["health"]))
+    baseDamage = round(random.uniform(1,10), 5)
+    gs["health"] = gs["health"] - (baseDamage + av)
+    logging.info("Molted! Health knocked down to " + str(gs["health"]))
 
 def eggs():
     global gs
@@ -150,7 +159,7 @@ def eggs():
         if gs["health"] <= 40:
             numeggs = numeggs / 2
         gs["eggs"] += numeggs
-        print ("Laid " + str(numeggs) + " eggs!")
+        logging.info("Laid " + str(numeggs) + " eggs!")
 
 def death():
     def reset():
@@ -177,7 +186,9 @@ def death():
     dQuitBtn = tk.Button(dbox, text="Quit Game", command=close)
     dQuitBtn.grid(row=4, column=1)
     global simLock
+    global aniMode
     simLock = True
+    aniMode = "death"
     savegame()
 
 def feed():
@@ -190,6 +201,7 @@ def feed():
     
     aniMode = "feed"
     gs["foodInTank"] += n
+    logging.info(str(gs["foodInTank"]) + " pellets put in the tank.")
 
 def clean():
     global gs
@@ -198,6 +210,7 @@ def clean():
     aniMode = "clean"
     gs["ammonia"] = gs["ammonia"]/4
     gs["foodInTank"] = 0
+    logging.info("Cleaned tank. Ammonia now at " + str(gs["ammonia"]))
 
 def buildDescriptions():
     global descAge
@@ -308,12 +321,14 @@ def closegame():
     global simLock
     simLock = True
     simStop = True
-    print("Sent kill signals to all threads...")
-    bgSimThread.join()
-    print("bgSimThread has stopped.")
-    aniThread.join()
-    print("aniThread has stopped.")
+    logging.info("Shutting down eTriops...")
     savegame()
+    logging.info("Saved game state.")
+    logging.info("Sending kill signal to all threads...")
+    bgSimThread.join()
+    logging.info("bgSimThread has stopped.")
+    aniThread.join()
+    logging.info("aniThread has stopped.")
     sys.exit()
 
 def idleAnimate():
@@ -348,17 +363,32 @@ def aniLoop():
             framenum = 0
 
             while framenum <= 7:
+                if aniMode == "idle" or simStop == True:  # In certain situations the program may accidentally enter this loop when
+                    break                                 # animation mode is set to idle. This conditional catches that and corrects it.
                 filename = "assets/" + aniMode + "/" + str(framenum) + ".gif"
                 aniFrame = tk.PhotoImage(file=filename)
                 imagePanel.config(image=aniFrame)
                 time.sleep(1)
                 framenum += 1
-            aniMode = "idle"
+            if aniMode == "death":
+                aniMode = "death"
+            else:
+                aniMode = "idle"
 
 
 # MAIN
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     os.chdir(sys._MEIPASS)
+
+# Set up logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler(buildfilepath("etriops.log")),
+        logging.StreamHandler()
+    ]
+)
 
 # Initialize GUI Window
 lWidth = 11
@@ -375,7 +405,7 @@ aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
 imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
 imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
 
-nameDesc = tk.Label(gui, text = "UNNAMED", width=lWidth, anchor="n", font=("Helvetica", 14, "bold"))
+nameDesc = tk.Label(gui, text = "UNNAMED", width=20, anchor="n", font=("Helvetica", 14, "bold"))
 nameDesc.grid(row=1, column=0, columnspan=4)
 ageDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
 ageDesc.grid(row=2, column=0, columnspan=4)
