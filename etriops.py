@@ -36,14 +36,14 @@ def interact(key):
     if key.char == 'q':  # Write game to file, then quit
         closeprompt()
 
-    if key.char == 'P':  # Dump debugging information to console + log
-        debugDump()
-    if key.char == 'O':  # CHEAT - Force egg laying
-        logging.info("Egg-laying cheat used!")
-        eggs()
-    if key.char == 'I':  # CHEAT - Force molting
-        logging.info("Force-molt cheat used!")
-        molt()
+#    if key.char == 'P':  # Dump debugging information to console + log
+#        debugDump()
+#    if key.char == 'O':  # CHEAT - Force egg laying
+#        logging.info("Egg-laying cheat used!")
+#        eggs()
+#    if key.char == 'I':  # CHEAT - Force molting
+#        logging.info("Force-molt cheat used!")
+#        molt()
 
 def debugDump():
     logging.debug(gs)

@@ -6,7 +6,7 @@
 
 For Windows:   
 1. Navigate to the eTriops-Win folder inside the main etriops folder
-2. Double-click eTriops-Win.exe
+2. Double-click eTriops.exe
 
 For Linux (or anyone else wanting to run the native Python script):   
 1. Make sure you have the following dependencies installed:

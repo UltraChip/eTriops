@@ -1,4 +1,8 @@
 ## eTriops Change Log
 
 Version 1.0 Release:
-- 
+- Added death animation
+- Added Logging
+- Minor UI Polish
+- Tweaked molt damage calculation
+- Fixed program freezing on exit(?)
