@@ -3,7 +3,7 @@
 ## e-Triops is a virtual pet in the style of a 
 ## classic Tamagotchi toy, meant to simulate the
 ## raising of a Triops.
-version = "v.1.0r"
+version = "v.1.5a"
 
 import tkinter as tk
 from tkinter import simpledialog as sd
