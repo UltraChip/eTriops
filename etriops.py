@@ -1,10 +1,10 @@
-## UltraChip's e-Triops Virtual Pet
-##
-## e-Triops is a virtual pet in the style of a 
-## classic Tamagotchi toy, meant to simulate the
-## raising of a Triops.
-version = "v.1.5a"
+'''
+UltraChip's e-Triops Virtual Pet
 
+e-Triops is a virtual pet in the style of a
+classic Tamagotchi toy, meant to simulate the
+raising of a Triops.
+'''
 import tkinter as tk
 from tkinter import simpledialog as sd
 import time
@@ -16,6 +16,7 @@ import threading
 import logging
 
 # Global Vars
+VERSION = "v.1.5a"
 gs = {}
 descAge = "SnS"
 descHealth = "SnS"
@@ -25,8 +26,8 @@ simStop = False
 simLock = False
 aniMode = "idle"
 
-# Interaction Handler: Parses key presses from the user
 def interact(key):
+    ''' Interaction Handler: Parses key presses from the user '''
     if key.char == 'f':  # Feed the triops
         feed()
     if key.char == 'c':  # Clean the tank
@@ -37,7 +38,7 @@ def interact(key):
         closeprompt()
 
     if key.char == 'P':  # Dump debugging information to console + log
-        debugDump()
+        debug_dump()
     if key.char == 'O':  # CHEAT - Force egg laying
         logging.info("Egg-laying cheat used!")
         eggs()
@@ -45,19 +46,20 @@ def interact(key):
         logging.info("Force-molt cheat used!")
         molt()
 
-def debugDump():
+def debug_dump():
+    ''' Prints a lot of debugging info to the log '''
     logging.debug(gs)
-    logging.debug("Game version: " + version)
-    logging.debug("descAge:      " + descAge)
-    logging.debug("descHealth:   " + descHealth)
-    logging.debug("descHunger:   " + descHunger)
-    logging.debug("descAmm:      " + descAmm)
-    logging.debug("simStop:      " + str(simStop))
-    logging.debug("simLock:      " + str(simLock))
-    logging.debug("aniMode:      " + aniMode)
+    logging.debug("Game version: %s", VERSION)
+    logging.debug("descAge:      %s", descAge)
+    logging.debug("descHealth:   %s", descHealth)
+    logging.debug("descHunger:   %s", descHunger)
+    logging.debug("descAmm:      %s", descAmm)
+    logging.debug("simStop:      %s", str(simStop))
+    logging.debug("simLock:      %s", str(simLock))
+    logging.debug("aniMode:      %s", aniMode)
 
-# Reading, writing, and initializing the game state
 def loadgame():
+    ''' Reading, writing, and initializing the game state '''
     global gs
     sfn = buildfilepath("etriops.sav")
     if os.path.exists(sfn):
@@ -72,7 +74,8 @@ def savegame():
         f.write(json.dumps(gs))
 
 def resetprompt():
-    prompt = tk.messagebox.askquestion("Confirm Reset", "Are you sure you want to ERASE " + gs["name"] + " and completely start over?")
+    prompt = tk.messagebox.askquestion("Confirm Reset", "Are you sure you want to ERASE " +
+                                       gs["name"] + " and completely start over?")
     if prompt == 'yes':
         initgame()
 
@@ -82,13 +85,14 @@ def initgame():
     global aniMode
     simLock = True
     name = sd.askstring("Enter Name", "What is your triops' name?")
-    gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
+    gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100,
+          'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
     gs["name"] = name
     nameDesc.config(text=gs["name"])
     savegame()
     simLock = False
     aniMode = "idle"
-    logging.info("New hatchling " + gs["name"] + " has been born. Congratulations!")
+    logging.info("New hatchling %s has been born. Congratulations!", gs["name"])
 
 def buildfilepath(filename):
     homedir = os.path.expanduser("~")
@@ -124,7 +128,7 @@ def tick():
 
     if random.randint(1,259200) == 3:  # 1 in 259,200 chance of molting per tick should result in an average molt rate of
         molt()                         # once every three days or so.
-    
+
     if random.randint(1,259200) == 6 and gs["age"] >= 14:  # Once a triop reaches day 14 or older it has a random chance of
         eggs()                                             # laying eggs (average once every three days).
 
@@ -136,7 +140,7 @@ def tick():
 
     if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
         savegame()
-      
+
 def molt():
     global gs
     global aniMode
@@ -177,9 +181,11 @@ def death():
     header.grid(row=0, column=0, columnspan=2)
     blankspace = tk.Label(dbox, text="   ", pady = 1)
     blankspace.grid(row=1, column=0)
-    finalAge = tk.Label(dbox, text="Final Age: " + str(gs["age"]) + " days - " + descAge, width=25, anchor='w')
+    finalAge = tk.Label(dbox, text="Final Age: " + str(gs["age"]) +
+                        " days - " + descAge, width=25, anchor='w')
     finalAge.grid(row=2, column=0, columnspan=2)
-    finalEggs = tk.Label(dbox, text="Total Egg Count: " + str(gs["eggs"]) + " eggs", width=25, anchor='w')
+    finalEggs = tk.Label(dbox, text="Total Egg Count: " + str(gs["eggs"]) +
+                         " eggs", width=25, anchor='w')
     finalEggs.grid(row=3, column=0, columnspan=2)
     dResetBtn = tk.Button(dbox, text="Reset Game", command=reset)
     dResetBtn.grid(row=4, column=0)
@@ -189,7 +195,8 @@ def death():
     global aniMode
     simLock = True
     aniMode = "death"
-    logging.info(gs["name"] + " has died. Final age " + str(gs["age"]) + " days. Total egg count " + str(gs[eggs]) + " eggs.")
+    logging.info(gs["name"] + " has died. Final age " + str(gs["age"]) +
+                 " days. Total egg count " + str(gs[eggs]) + " eggs.")
     savegame()
 
 def feed():
@@ -199,7 +206,7 @@ def feed():
     n = sd.askinteger("Feed Triops", "How many pellets do you want to give " + gs["name"] + "?")
     if n is None:
         n = 0
-    
+
     aniMode = "feed"
     gs["foodInTank"] += n
     logging.info(str(gs["foodInTank"]) + " pellets put in the tank.")
@@ -235,7 +242,7 @@ def buildDescriptions():
         descAge = "Elder"
     if gs["age"] >= 90:
         descAge = "LEGENDARY"
-    
+
     if gs["health"] < 20:
         descHealth = "CRITICAL"
     if gs["health"] >=20 and gs["health"] < 50:
@@ -248,7 +255,7 @@ def buildDescriptions():
         descHealth = "Excellent"
     if gs["health"] >= 95:
         descHealth = "Peak Condition"
-    
+
     if gs["hunger"] <= 0:
         descHunger = "STARVING"
     if gs["hunger"] > 0 and gs["hunger"] < 25:
@@ -261,7 +268,7 @@ def buildDescriptions():
         descHunger = "Full"
     if gs["hunger"] >= 95:
         descHunger = "Stuffed"
-    
+
     if gs["ammonia"] < 7:
         descAmm = "Excellent"
     if gs["ammonia"] >= 7 and gs["ammonia"] < 50:
@@ -364,8 +371,8 @@ def aniLoop():
             framenum = 0
 
             while framenum <= 7:
-                if aniMode == "idle" or simStop == True:  # In certain situations the program may accidentally enter this loop when
-                    break                                 # animation mode is set to idle. This conditional catches that and corrects it.
+                if aniMode == "idle" or simStop:  # In certain situations the program may accidentally enter this loop when
+                    break                         # animation mode is set to idle. This conditional catches that and corrects it.
                 filename = "assets/" + aniMode + "/" + str(framenum) + ".gif"
                 aniFrame = tk.PhotoImage(file=filename)
                 imagePanel.config(image=aniFrame)
@@ -393,10 +400,10 @@ logging.basicConfig(
 )
 
 # Initialize GUI Window
-lWidth = 11
+LWIDTH = 11
 
 gui = tk.Tk()
-gui.title("eTriops  " + version)
+gui.title("eTriops  " + VERSION)
 favicon = tk.PhotoImage(file='assets/favicon.gif')
 gui.iconphoto(True, favicon)
 gui.resizable(width=False, height=False)
@@ -404,39 +411,48 @@ gui.bind("<Key>", interact)
 gui.protocol("WM_DELETE_WINDOW", closegame)
 
 aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
-imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
+imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10,
+                      relief="sunken", anchor="s")
 imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
 
 nameDesc = tk.Label(gui, text = "UNNAMED", width=20, anchor="n", font=("Helvetica", 14, "bold"))
 nameDesc.grid(row=1, column=0, columnspan=4)
-ageDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
+ageDesc = tk.Label(gui, text="SnS", width=LWIDTH, anchor="n", font=("Helvetica", 12, "bold"))
 ageDesc.grid(row=2, column=0, columnspan=4)
 
-healthLabel = tk.Label(gui, text="Health:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
+healthLabel = tk.Label(gui, text="Health:", width=LWIDTH, anchor="w",
+                       font=("Helvetica", 10, "bold"))
 healthLabel.grid(row=3, column=0)
-healthDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
+healthDesc = tk.Label(gui, text="SnS", width=LWIDTH, anchor="w")
 healthDesc.grid(row=3, column=1)
-hungerLabel = tk.Label(gui, text="Hunger:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
+hungerLabel = tk.Label(gui, text="Hunger:", width=LWIDTH, anchor="w",
+                       font=("Helvetica", 10, "bold"))
 hungerLabel.grid(row=3, column=2)
-hungerDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
+hungerDesc = tk.Label(gui, text="SnS", width=LWIDTH, anchor="w")
 hungerDesc.grid(row=3, column=3)
 
-ammLabel = tk.Label(gui, text="Water Quality:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
+ammLabel = tk.Label(gui, text="Water Quality:", width=LWIDTH, anchor="w",
+                    font=("Helvetica", 10, "bold"))
 ammLabel.grid(row=4, column=0)
-ammDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
+ammDesc = tk.Label(gui, text="SnS", width=LWIDTH, anchor="w")
 ammDesc.grid(row=4, column=1)
-foodLabel = tk.Label(gui, text="Food in Tank:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
+foodLabel = tk.Label(gui, text="Food in Tank:", width=LWIDTH, anchor="w",
+                     font=("Helvetica", 10, "bold"))
 foodLabel.grid(row=4, column=2)
-foodDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
+foodDesc = tk.Label(gui, text="SnS", width=LWIDTH, anchor="w")
 foodDesc.grid(row=4, column=3)
 
-feedBtn = tk.Button(gui, text="Feed", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=feed)
+feedBtn = tk.Button(gui, text="Feed", width=LWIDTH, anchor="n", font=("Helvetica", 10, "bold"),
+                    command=feed)
 feedBtn.grid(row=5, column=0, padx=5, pady=5)
-cleanBtn = tk.Button(gui, text="Clean", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=clean)
+cleanBtn = tk.Button(gui, text="Clean", width=LWIDTH, anchor="n", font=("Helvetica", 10, "bold"),
+                     command=clean)
 cleanBtn.grid(row=5, column=1, padx=5, pady=5)
-resetBtn = tk.Button(gui, text="Reset", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=resetprompt)
+resetBtn = tk.Button(gui, text="Reset", width=LWIDTH, anchor="n", font=("Helvetica", 10, "bold"),
+                     command=resetprompt)
 resetBtn.grid(row=5, column=2, padx=5, pady=5)
-quitBtn = tk.Button(gui, text="Quit", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=closeprompt)
+quitBtn = tk.Button(gui, text="Quit", width=LWIDTH, anchor="n", font=("Helvetica", 10, "bold"),
+                    command=closeprompt)
 quitBtn.grid(row=5, column=3, padx=5, pady=5)
 
 # Getting ready for core loops
