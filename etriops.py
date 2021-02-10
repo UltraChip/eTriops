@@ -36,14 +36,14 @@ def interact(key):
     if key.char == 'q':  # Write game to file, then quit
         closeprompt()
 
-#    if key.char == 'P':  # Dump debugging information to console + log
-#        debugDump()
-#    if key.char == 'O':  # CHEAT - Force egg laying
-#        logging.info("Egg-laying cheat used!")
-#        eggs()
-#    if key.char == 'I':  # CHEAT - Force molting
-#        logging.info("Force-molt cheat used!")
-#        molt()
+    if key.char == 'P':  # Dump debugging information to console + log
+        debugDump()
+    if key.char == 'O':  # CHEAT - Force egg laying
+        logging.info("Egg-laying cheat used!")
+        eggs()
+    if key.char == 'I':  # CHEAT - Force molting
+        logging.info("Force-molt cheat used!")
+        molt()
 
 def debugDump():
     logging.debug(gs)
@@ -189,6 +189,7 @@ def death():
     global aniMode
     simLock = True
     aniMode = "death"
+    logging.info(gs["name"] + " has died. Final age " + str(gs["age"]) + " days. Total egg count " + str(gs[eggs]) + " eggs.")
     savegame()
 
 def feed():
@@ -384,6 +385,7 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%b %d, %Y-%H:%M:%S",
     handlers=[
         logging.FileHandler(buildfilepath("etriops.log")),
         logging.StreamHandler()
