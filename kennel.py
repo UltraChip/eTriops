@@ -249,4 +249,4 @@ bgSimThread.start()
 while True:
     if keyboard.is_pressed("q"):
         closegame()
-    time.sleep(1)
+    time.sleep(.1)
