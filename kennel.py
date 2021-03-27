@@ -19,6 +19,7 @@ import os
 import sys
 import threading
 import logging
+import keyboard
 
 # Global Vars
 gs = {}
@@ -104,6 +105,8 @@ def tick():
 
     if gs["tod"] % 1800 == 0:  # Save the game every 30 minutes (1,800 seconds = 30 minutes)
         savegame()
+    if gs["tod"] % feederRate == 0:  # Auto-feed according to feederRate
+        feed()
       
 def molt():
     global gs
@@ -202,13 +205,9 @@ def bgSimLoop():
     while not simStop:      # Keep looping until simStop flag is True
         while not simLock:  # If simLock is True then break this loop and idle
             tick()          # until it becomes False again.
+            reportStatus()
             time.sleep(1)
         time.sleep(0.1)
-
-def closeprompt():
-    prompt = tk.messagebox.askquestion("Confirm Quit", "Are you sure you want to close the game?")
-    if prompt == 'yes':
-        closegame()
 
 def closegame():
     global simStop
@@ -240,6 +239,13 @@ logging.basicConfig(
 bgSimThread = threading.Thread(target=bgSimLoop, daemon=True)
 loadgame()
 
+# Set up the AutoFeeder
+feederDose = int(input("How many pellets per feeding? "))
+feederRate = int(input("How often do you want to feed " + gs["name"] + " (in hours)? ")) * 3600
+
 # Initialize core loops and threads
 bgSimThread.start()
-reportStatus()
+while True:
+    if keyboard.is_pressed("q"):
+        closegame()
+    time.sleep(1)
