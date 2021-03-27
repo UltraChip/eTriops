@@ -19,7 +19,6 @@ import os
 import sys
 import threading
 import logging
-import keyboard
 
 # Global Vars
 gs = {}
@@ -248,6 +247,7 @@ feederRate = int(input("How often do you want to feed " + gs["name"] + " (in hou
 # Initialize core loops and threads
 bgSimThread.start()
 while True:
-    if keyboard.is_pressed("q"):
+    try:
+        time.sleep(.1)
+    except KeyboardInterrupt:
         closegame()
-    time.sleep(.1)
