@@ -28,26 +28,8 @@ descHunger = "SnS"
 descAmm = "SnS"
 simStop = False
 simLock = False
-
-# Interaction Handler: Parses key presses from the user
-def interact(key):
-    if key.char == 'f':  # Feed the triops
-        feed()
-    if key.char == 'c':  # Clean the tank
-        clean()
-    if key.char == 'r':  # Reset the game
-        resetprompt()
-    if key.char == 'q':  # Write game to file, then quit
-        closeprompt()
-
-    if key.char == 'P':  # CHEAT - Force a status report
-        reportStatus()
-    if key.char == 'O':  # CHEAT - Force egg laying
-        logging.info("Egg-laying cheat used!")
-        eggs()
-    if key.char == 'I':  # CHEAT - Force molting
-        logging.info("Force-molt cheat used!")
-        molt()
+feederDose = 1
+feederRate = 86400
 
 def reportStatus():
     os.system("clear")
@@ -57,7 +39,6 @@ def reportStatus():
     print("Hunger:        " + descHunger)
     print("Water Quality: " + descAmm)
     print("Food in Tank:  " + gs["foodInTank"])
-
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -71,30 +52,11 @@ def loadgame():
         reportStatus()
     else:
         logging.info(sfn + " not found! Exiting...")
-        quit()
+        sys.exit()
 
 def savegame():
     with open(buildfilepath("etriops.sav"), 'w+') as f:
         f.write(json.dumps(gs))
-
-def resetprompt():
-    prompt = tk.messagebox.askquestion("Confirm Reset", "Are you sure you want to ERASE " + gs["name"] + " and completely start over?")
-    if prompt == 'yes':
-        initgame()
-
-def initgame():
-    global gs
-    global simLock
-    global aniMode
-    simLock = True
-    name = sd.askstring("Enter Name", "What is your triops' name?")
-    gs = {'name': 'unnamed', 'age': 0, 'tod': 0, 'hcap': 100, 'health': 100, 'hunger': 100, 'ammonia': 0, 'foodInTank': 0, 'eggs': 0}
-    gs["name"] = name
-    nameDesc.config(text=gs["name"])
-    savegame()
-    simLock = False
-    aniMode = "idle"
-    logging.info("New hatchling " + gs["name"] + " has been born. Congratulations!")
 
 def buildfilepath(filename):
     homedir = os.path.expanduser("~")
@@ -145,9 +107,7 @@ def tick():
       
 def molt():
     global gs
-    global aniMode
 
-    aniMode = "molt"
     av = gs["age"]
     if av > 93:
         av = 93
@@ -157,10 +117,8 @@ def molt():
 
 def eggs():
     global gs
-    global aniMode
 
     if gs["health"] > 20:
-        aniMode = "eggs"
         numeggs = random.randint(10,30)
         if gs["health"] <= 40:
             numeggs = numeggs / 2
@@ -168,55 +126,17 @@ def eggs():
         logging.info("Laid " + str(numeggs) + " eggs!")
 
 def death():
-    def reset():
-        dbox.destroy()
-        initgame()
-
-    def close():
-        dbox.destroy()
-        closegame()
-
-    dbox = tk.Toplevel(gui)
-    dbox.title("RIP")
-
-    header = tk.Label(dbox, text="Unfortunately, " + gs["name"] + " has passed away.", padx=10)
-    header.grid(row=0, column=0, columnspan=2)
-    blankspace = tk.Label(dbox, text="   ", pady = 1)
-    blankspace.grid(row=1, column=0)
-    finalAge = tk.Label(dbox, text="Final Age: " + str(gs["age"]) + " days - " + descAge, width=25, anchor='w')
-    finalAge.grid(row=2, column=0, columnspan=2)
-    finalEggs = tk.Label(dbox, text="Total Egg Count: " + str(gs["eggs"]) + " eggs", width=25, anchor='w')
-    finalEggs.grid(row=3, column=0, columnspan=2)
-    dResetBtn = tk.Button(dbox, text="Reset Game", command=reset)
-    dResetBtn.grid(row=4, column=0)
-    dQuitBtn = tk.Button(dbox, text="Quit Game", command=close)
-    dQuitBtn.grid(row=4, column=1)
-    global simLock
-    global aniMode
-    simLock = True
-    aniMode = "death"
-    savegame()
+    print("Unfortunately, " + gs["name"] + " has passed away.")
+    print("Final Age: " + str(gs["age"]) + " days - " + descAge)
+    print("Total Egg Count: " + str(gs["eggs"]) + " eggs")
+    print("")
+    closegame()
 
 def feed():
     global gs
-    global aniMode
-
-    n = sd.askinteger("Feed Triops", "How many pellets do you want to give " + gs["name"] + "?")
-    if n is None:
-        n = 0
-    
-    aniMode = "feed"
-    gs["foodInTank"] += n
+    global feederDose
+    gs["foodInTank"] += feederDose
     logging.info(str(gs["foodInTank"]) + " pellets put in the tank.")
-
-def clean():
-    global gs
-    global aniMode
-
-    aniMode = "clean"
-    gs["ammonia"] = gs["ammonia"]/4
-    gs["foodInTank"] = 0
-    logging.info("Cleaned tank. Ammonia now at " + str(gs["ammonia"]))
 
 def buildDescriptions():
     global descAge
@@ -285,38 +205,6 @@ def bgSimLoop():
             time.sleep(1)
         time.sleep(0.1)
 
-def refreshScreen():
-    yellow = "#e39000"
-    red = "#ff0000"
-    black = "#000000"
-    green = "#28bf0d"
-
-    buildDescriptions()
-    ageDesc.config(text=descAge)
-    healthDesc.config(text=descHealth)
-    if descHealth == "Moderate":
-        healthDesc.config(fg=yellow)
-    elif descHealth == "Poor" or descHealth == "CRITICAL":
-        healthDesc.config(fg=red)
-    else:
-        healthDesc.config(fg=black)
-    hungerDesc.config(text=descHunger)
-    if descHunger == "Hungry":
-        hungerDesc.config(fg=yellow)
-    elif descHunger == "Famished" or descHunger == "STARVING":
-        hungerDesc.config(fg=red)
-    else:
-        hungerDesc.config(fg=black)
-    ammDesc.config(text=descAmm)
-    if descAmm == "Dirty":
-        ammDesc.config(fg=yellow)
-    elif descAmm == "Toxic" or descAmm == "SEVERE TOXICITY":
-        ammDesc.config(fg=red)
-    else:
-        ammDesc.config(fg=black)
-    foodDesc.config(text=gs["foodInTank"])
-    gui.after(100, refreshScreen)
-
 def closeprompt():
     prompt = tk.messagebox.askquestion("Confirm Quit", "Are you sure you want to close the game?")
     if prompt == 'yes':
@@ -333,58 +221,10 @@ def closegame():
     logging.info("Sending kill signal to all threads...")
     bgSimThread.join()
     logging.info("bgSimThread has stopped.")
-    aniThread.join()
-    logging.info("aniThread has stopped.")
     sys.exit()
-
-def idleAnimate():
-    global aniFrame
-
-    if descAge == "SnS":
-        return
-
-    framenum = gs["tod"] % 10
-
-    if descAge == "Hatchling":
-        prefix = "hatchling-"
-    elif descAge == "Juvenile":
-        prefix = "juvenile-"
-    else:
-        prefix = "adult-"
-
-    filename = "assets/idle/" + prefix + str(framenum) + ".gif"
-    aniFrame = tk.PhotoImage(file=filename)
-    imagePanel.config(image=aniFrame)
-
-def aniLoop():
-    global aniFrame
-    global simLock
-    global aniMode
-
-    while not simStop:
-        if aniMode == "idle":
-            idleAnimate()
-            time.sleep(1)
-        else:
-            framenum = 0
-
-            while framenum <= 7:
-                if aniMode == "idle" or simStop == True:  # In certain situations the program may accidentally enter this loop when
-                    break                                 # animation mode is set to idle. This conditional catches that and corrects it.
-                filename = "assets/" + aniMode + "/" + str(framenum) + ".gif"
-                aniFrame = tk.PhotoImage(file=filename)
-                imagePanel.config(image=aniFrame)
-                time.sleep(1)
-                framenum += 1
-            if aniMode == "death":
-                aniMode = "death"
-            else:
-                aniMode = "idle"
 
 
 # MAIN
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    os.chdir(sys._MEIPASS)
 
 # Set up logging
 logging.basicConfig(
@@ -396,60 +236,10 @@ logging.basicConfig(
     ]
 )
 
-# Initialize GUI Window
-lWidth = 11
-
-gui = tk.Tk()
-gui.title("eTriops  " + version)
-favicon = tk.PhotoImage(file='assets/favicon.gif')
-gui.iconphoto(True, favicon)
-gui.resizable(width=False, height=False)
-gui.bind("<Key>", interact)
-gui.protocol("WM_DELETE_WINDOW", closegame)
-
-aniFrame = tk.PhotoImage(file='assets/placeholder.gif')
-imagePanel = tk.Label(gui, image=aniFrame, bg="#4c6955", borderwidth=10, relief="sunken", anchor="s")
-imagePanel.grid(row=0, column=0, columnspan=4, pady=5)
-
-nameDesc = tk.Label(gui, text = "UNNAMED", width=20, anchor="n", font=("Helvetica", 14, "bold"))
-nameDesc.grid(row=1, column=0, columnspan=4)
-ageDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="n", font=("Helvetica", 12, "bold"))
-ageDesc.grid(row=2, column=0, columnspan=4)
-
-healthLabel = tk.Label(gui, text="Health:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
-healthLabel.grid(row=3, column=0)
-healthDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
-healthDesc.grid(row=3, column=1)
-hungerLabel = tk.Label(gui, text="Hunger:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
-hungerLabel.grid(row=3, column=2)
-hungerDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
-hungerDesc.grid(row=3, column=3)
-
-ammLabel = tk.Label(gui, text="Water Quality:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
-ammLabel.grid(row=4, column=0)
-ammDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
-ammDesc.grid(row=4, column=1)
-foodLabel = tk.Label(gui, text="Food in Tank:", width=lWidth, anchor="w", font=("Helvetica", 10, "bold"))
-foodLabel.grid(row=4, column=2)
-foodDesc = tk.Label(gui, text="SnS", width=lWidth, anchor="w")
-foodDesc.grid(row=4, column=3)
-
-feedBtn = tk.Button(gui, text="Feed", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=feed)
-feedBtn.grid(row=5, column=0, padx=5, pady=5)
-cleanBtn = tk.Button(gui, text="Clean", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=clean)
-cleanBtn.grid(row=5, column=1, padx=5, pady=5)
-resetBtn = tk.Button(gui, text="Reset", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=resetprompt)
-resetBtn.grid(row=5, column=2, padx=5, pady=5)
-quitBtn = tk.Button(gui, text="Quit", width=lWidth, anchor="n", font=("Helvetica", 10, "bold"), command=closeprompt)
-quitBtn.grid(row=5, column=3, padx=5, pady=5)
-
 # Getting ready for core loops
 bgSimThread = threading.Thread(target=bgSimLoop, daemon=True)
-aniThread = threading.Thread(target=aniLoop, daemon=True)
 loadgame()
 
 # Initialize core loops and threads
 bgSimThread.start()
-aniThread.start()
-refreshScreen()
-gui.mainloop()
+reportStatus()
