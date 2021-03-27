@@ -205,6 +205,7 @@ def bgSimLoop():
     while not simStop:      # Keep looping until simStop flag is True
         while not simLock:  # If simLock is True then break this loop and idle
             tick()          # until it becomes False again.
+            buildDescriptions()
             reportStatus()
             time.sleep(1)
         time.sleep(0.1)
