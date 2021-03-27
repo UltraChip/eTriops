@@ -139,7 +139,7 @@ def feed():
     global gs
     global feederDose
     gs["foodInTank"] += feederDose
-    logging.info(str(gs["foodInTank"]) + " pellets put in the tank.")
+    logging.info(str(feederDose) + " pellets put in the tank.")
 
 def buildDescriptions():
     global descAge
