@@ -39,7 +39,7 @@ def reportStatus():
     print("Health:        " + descHealth)
     print("Hunger:        " + descHunger)
     print("Water Quality: " + descAmm)
-    print("Food in Tank:  " + gs["foodInTank"])
+    print("Food in Tank:  " + str(gs["foodInTank"]))
 
 # Reading, writing, and initializing the game state
 def loadgame():
@@ -220,6 +220,7 @@ def closegame():
     logging.info("Sending kill signal to all threads...")
     bgSimThread.join()
     logging.info("bgSimThread has stopped.")
+    logging.info(gs["name"] + " has left the kennel.")
     sys.exit()
 
 
