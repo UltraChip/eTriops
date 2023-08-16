@@ -5,8 +5,8 @@
 **HOW TO RUN:**
 
 For Windows:   
-1. Navigate to the eTriops-Win folder inside the main etriops folder
-2. Double-click eTriops.exe
+1. Follow the steps for "How to Build a New EXE", below.
+2. Double-click on the resulting etriops.exe
 
 For Linux (or anyone else wanting to run the native Python script):   
 1. Make sure you have the following dependencies installed:
